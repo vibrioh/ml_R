@@ -1,0 +1,299 @@
+
+\documentclass[twoside,11pt]{homework}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{bm}
+\newcommand{\vect}[1]{\boldsymbol{\mathbf{#1}}}
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+\lstset{ %
+	language=R,                     % the language of the code
+	basicstyle=\footnotesize,       % the size of the fonts that are used for the code
+	numbers=left,                   % where to put the line-numbers
+	numberstyle=\tiny\color{gray},  % the style that is used for the line-numbers
+	stepnumber=1,                   % the step between two line-numbers. If it's 1, each line
+	% will be numbered
+	numbersep=5pt,                  % how far the line-numbers are from the code
+	backgroundcolor=\color{white},  % choose the background color. You must add \usepackage{color}
+	showspaces=false,               % show spaces adding particular underscores
+	showstringspaces=false,         % underline spaces within strings
+	showtabs=false,                 % show tabs within strings adding particular underscores
+	frame=single,                   % adds a frame around the code
+	rulecolor=\color{black},        % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. commens (green here))
+	tabsize=2,                      % sets default tabsize to 2 spaces
+	captionpos=b,                   % sets the caption-position to bottom
+	breaklines=true,                % sets automatic line breaking
+	breakatwhitespace=false,        % sets if automatic breaks should only happen at whitespace
+	title=\lstname,                 % show the filename of files included with \lstinputlisting;
+	% also try caption instead of title
+	keywordstyle=\color{blue},      % keyword style
+	commentstyle=\color{dkgreen},   % comment style
+	stringstyle=\color{mauve},      % string literal style
+	escapeinside={\%*}{*)},         % if you want to add a comment within your code
+	morekeywords={*,...},            % if you want to add more keywords to the set
+	belowcaptionskip=0em,
+	belowskip=0em
+} 
+
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd{\@verbatim}
+{\verbatim@font}
+{\verbatim@font\footnotesize}
+{}{}
+\preto{\@verbatim}{\topsep=0pt \partopsep=0pt }
+\makeatother
+
+\coursename{COMS 4771 Machine Learning } % DON'T CHANGE THIS
+
+\studname{Jun Hu}    % YOUR NAME GOES HERE
+\studmail{jh3846@columbia.edu}% YOUR UNI GOES HERE
+\hwNo{3}                   % THE HOMEWORK NUMBER GOES HERE
+\collab{}   % THE UNI'S OF STUDENTS YOU DISCUSSED WITH
+
+% Uncomment the next line if you want to use \includegraphics.\textbf{\textbf{\textbf{}}}
+%\usepackage{graphicx}
+
+\begin{document}
+\maketitle
+
+\section*{Problem 1}
+
+\begin{enumerate}
+\item[\textbf{(a)}] Execute:
+
+\begin{lstlisting}
+library(MASS)
+attach(Boston)
+mu.hat = mean(medv)
+mu.hat
+\end{lstlisting}
+
+\begin{verbatim}
+[1] 22.53281
+
+\end{verbatim}
+
+The mean of \textbf{medv}, the estimate $\hat{\mu}$ is $22.53281$.
+
+\item[\textbf{(b)}] By the definition:
+
+\begin{lstlisting}
+sem.mu.hat = sd(medv)/sqrt(length(medv))
+sem.mu.hat
+\end{lstlisting}
+
+\begin{verbatim}
+[1] 0.4088611
+
+\end{verbatim}
+
+The standard error of the $\hat{\mu}$ is $0.4088611$. It is the standard deviation of the \textbf{medv}-sample-mean's estimate of the its population-mean.
+
+\item[\textbf{(c)}] By bootstrap:
+
+\begin{lstlisting}
+library(boot)
+set.seed(1)
+boot.fn = function(data, index){
+return(mean(data[index]))
+}
+boot(medv, boot.fn, 1000)
+\end{lstlisting}
+
+\begin{verbatim}
+ORDINARY NONPARAMETRIC BOOTSTRAP
+
+
+Call:
+boot(data = medv, statistic = boot.fn, R = 1000)
+
+
+Bootstrap Statistics :
+original      bias    std. error
+t1* 22.53281 0.008517589   0.4119374
+
+\end{verbatim}
+
+The standard error of the $\hat{\mu}$ is $0.4119374$ by bootstrap, which is very close to the $\hat{\mu}$ obtain in \textbf{(b)}.
+
+\item[\textbf{(d)}] The $95\%$ confidence interval by bootstrap:
+
+\begin{lstlisting}
+ci.bootstrap = c(22.53281-2*0.4119374, 22.53281+2*0.4119374)
+ci.bootstrap
+\end{lstlisting}
+
+\begin{verbatim}
+[1] 21.70894 23.35668
+
+\end{verbatim}
+
+The $95\%$ confidence interval by \textbf{t.test(medv)}:
+
+\begin{lstlisting}
+t.test(medv)
+\end{lstlisting}
+
+\begin{verbatim}
+	One Sample t-test
+
+data:  medv
+t = 55.111, df = 505, p-value < 2.2e-16
+alternative hypothesis: true mean is not equal to 0
+95 percent confidence interval:
+21.72953 23.33608
+sample estimates:
+mean of x 
+22.53281
+
+\end{verbatim}
+
+They are very close to each other (only about $0.02$ difference for the lower/higher bound).
+
+\item[\textbf{(e)}] The median of \textbf{medv} $\hat{\mu}_{med}$:
+
+\begin{lstlisting}
+med.hat = median(medv)
+med.hat
+\end{lstlisting}
+
+\begin{verbatim}
+[1] 21.2
+
+\end{verbatim}
+
+The $\hat{\mu}_{med}$ is 21.2.
+
+\item[\textbf{(f)}] The standard error of $\hat{\mu}_{med}$:
+
+\begin{lstlisting}
+boot.fn = function(data, index){
+return(median(data[index]))
+}
+boot(medv, boot.fn, 1000)
+\end{lstlisting}
+
+\begin{verbatim}
+ORDINARY NONPARAMETRIC BOOTSTRAP
+
+
+Call:
+boot(data = medv, statistic = boot.fn, R = 1000)
+
+
+Bootstrap Statistics :
+original  bias    std. error
+t1*     21.2 -0.0098   0.3874004
+
+\end{verbatim}
+
+The estimated median of \textbf{medv} is $21.2$ which is exactly the same as $\hat{\mu}_{med}$ in \textbf{(e)}, and the standard error found by bootstrap is $0.3874004$, which is relatively small. Furthermore, the standard error of $\hat{\mu}_{med}$ found by bootstrap is also smaller than the standard error of mean in this case.
+
+\item[\textbf{(g)}] Let's compute the $10th$ percentile of \textbf{medv} $\hat{\mu}_{0.1}$:
+
+\begin{lstlisting}
+pct.hat = quantile(medv, c(0.1))
+pct.hat
+\end{lstlisting}
+
+\begin{verbatim}
+  10% 
+12.75 
+
+\end{verbatim}
+
+The $\hat{\mu}_{0.1}$ is $12.75\%$
+
+\item[\textbf{(h)}] The standard error of $\hat{\mu}_{0.1}$ by bootstrap:
+
+\begin{lstlisting}
+boot.fn = function(data, index){
+return(quantile(data[index], c(0.1)))
+}
+boot(medv, boot.fn, 1000)
+\end{lstlisting}
+
+\begin{verbatim}
+ORDINARY NONPARAMETRIC BOOTSTRAP
+
+
+Call:
+boot(data = medv, statistic = boot.fn, R = 1000)
+
+
+Bootstrap Statistics :
+original  bias    std. error
+t1*    12.75 0.00515   0.5113487
+
+\end{verbatim}
+
+By using bootstrap, we obtain the estimated value of $10th$ percentile of $\hat{\mu}_{0.1}$ is the same as in \textbf{(g)}, and the standard error $0.5113487$ is relatively small. This has proven that bootstrap analysis can be applied in lots of situations.
+
+
+\end{enumerate}
+
+
+
+\section*{Problem 2}
+
+Let $D(\vect{x},\vect{x_n})$ to be the distance from $\vect{x}$ to $\vect{x_n}$. By decomposition of  $D(\vect{x},\vect{x_n})$ into inner products
+and substitution of $K(\vect{x_i},\vect{x_j}) = \phi(\vect{x_i}) \cdot \phi(\vect{x_j})$ for the inner products, we have
+
+
+\begin{align*}
+D(\vect{x},\vect{x_n}) 
+&= \Arrowvert \vect{x} - \vect{x_n} \Arrowvert ^2 \\
+&= ( \vect{x} - \vect{x_n} ) ( \vect{x} - \vect{x_n} ) ^\mathrm{T} \\
+&= ( \vect{x} - \vect{x_n} ) ( \vect{x} ^\mathrm{T} - \vect{x_n} ^\mathrm{T}) \\
+&= \vect{x} \vect{x} ^\mathrm{T} - \vect{x} \vect{x_n} ^\mathrm{T} - \vect{x_n} \vect{x} ^\mathrm{T} + \vect{x_n} \vect{x_n} ^\mathrm{T} \\
+&= \vect{x} \cdot \vect{x} - \vect{x} \cdot \vect{x_n} - \vect{x_n} \cdot \vect{x} + \vect{x_n} \cdot \vect{x_n} \\
+&= \vect{x} \cdot \vect{x} - 2\vect{x} \cdot \vect{x_n} + \vect{x_n} \cdot \vect{x_n} \\
+&= K(\vect{x} , \vect{x}) - 2K(\vect{x} , \vect{x_n}) + K(\vect{x_n} , \vect{x_n} )   &&\mbox{\textbf{(1)}}
+\end{align*}
+
+Now $K(\vect{x_i},\vect{x_j})$ in the above expression can be substituted by an arbitrary nonlinear function, such as:
+\begin{align*}
+K(\vect{x_i},\vect{x_j}) &= (1 + \vect{x_i} \cdot \vect{x_j} )^p \\
+K(\vect{x_i},\vect{x_j}) &= \exp \left( -\frac{\Arrowvert \vect{x_i} - \vect{x_j} \Arrowvert ^2}{\sigma ^2}          \right) \\
+K(\vect{x_i},\vect{x_j}) &= \tanh (\alpha \vect{x_i} \cdot \vect{x_j} + \beta)
+\end{align*}
+
+Therefore, \textbf{(1)} is the formulated nearest-neighbour classifier for a general nonlinear kernel.
+
+
+
+\section*{Problem 3}
+
+Express the middle factor as a power series as:
+
+\begin{align*}
+\exp \left( \frac{\vect{x} ^\mathrm{T} \vect{x}'}{\sigma ^2} \right)
+&= \sum_{n=0}^{\infty} \left( \frac{\left( \frac{\vect{x} ^\mathrm{T} \vect{x}'}{\sigma ^2} \right)^n}{n!} \right) \\
+&= \sum_{n=0}^{\infty}  \frac{(\vect{x} ^\mathrm{T} \vect{x}')^n} {\sigma ^{2n} n!} \\
+&= \sum_{n=0}^{\infty}  \phi (\vect{x}) ^\mathrm{T} \phi (\vect{x'})
+\end{align*}
+
+So the middle factor is expressed as the inner product of an infinite-dimensional feature vector, now we substitute this middle part back into the expanded Gaussian kernel:
+
+\begin{align*}
+k(\vect{x}, \vect{x'})
+&= \exp \left( - \frac{\vect{x} ^\mathrm{T} \vect{x}}{2\sigma ^2} \right) \exp \left( \frac{\vect{x} ^\mathrm{T} \vect{x}'}{\sigma ^2} \right) \exp \left( - \frac{\vect{x'} ^\mathrm{T} \vect{x}'}{2\sigma ^2} \right) \\
+&= \exp \left( - \frac{\vect{x} ^\mathrm{T} \vect{x}}{2\sigma ^2} \right) \sum_{n=0}^{\infty}  \phi (\vect{x}) ^\mathrm{T} \phi (\vect{x'}) \exp \left( - \frac{\vect{x'} ^\mathrm{T} \vect{x}'}{2\sigma ^2} \right) \\
+&=  \sum_{n=0}^{\infty}  \exp \left( - \frac{\vect{x} ^\mathrm{T} \vect{x}}{2\sigma ^2} \right)\phi (\vect{x}) ^\mathrm{T} \phi (\vect{x'}) \exp \left( - \frac{\vect{x'} ^\mathrm{T} \vect{x}'}{2\sigma ^2} \right) \\
+&=  \sum_{n=0}^{\infty} \left[  \exp \left( - \frac{\vect{x} ^\mathrm{T} \vect{x}}{2\sigma ^2} \right)\phi (\vect{x}) \right] ^\mathrm{T} \left[  \exp \left( - \frac{\vect{x'} ^\mathrm{T} \vect{x}'}{2\sigma ^2} \right) \phi (\vect{x'}) \right] \\
+&= \sum_{n=0}^{\infty}  \psi (\vect{x}) ^\mathrm{T} \psi (\vect{x'})
+\end{align*}
+
+So, as shown $ \exists  \ \psi (\vect{x})  = \exp \left( - \frac{\vect{x} ^\mathrm{T} \vect{x}}{2\sigma ^2} \right)\phi (\vect{x}) $, the Gaussian Kernel can be expressed as the inner product of an infinite-dimensional vector.
+
+
+
+
+
+	
+
+
+\end{document} 

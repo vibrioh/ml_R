@@ -1,0 +1,175 @@
+
+\documentclass[twoside,11pt]{homework}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{bm}
+\newcommand{\vect}[1]{\boldsymbol{\mathbf{#1}}}
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+\lstset{ %
+	language=R,                     % the language of the code
+	basicstyle=\footnotesize,       % the size of the fonts that are used for the code
+	numbers=left,                   % where to put the line-numbers
+	numberstyle=\tiny\color{gray},  % the style that is used for the line-numbers
+	stepnumber=1,                   % the step between two line-numbers. If it's 1, each line
+	% will be numbered
+	numbersep=5pt,                  % how far the line-numbers are from the code
+	backgroundcolor=\color{white},  % choose the background color. You must add \usepackage{color}
+	showspaces=false,               % show spaces adding particular underscores
+	showstringspaces=false,         % underline spaces within strings
+	showtabs=false,                 % show tabs within strings adding particular underscores
+	frame=single,                   % adds a frame around the code
+	rulecolor=\color{black},        % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. commens (green here))
+	tabsize=2,                      % sets default tabsize to 2 spaces
+	captionpos=b,                   % sets the caption-position to bottom
+	breaklines=true,                % sets automatic line breaking
+	breakatwhitespace=false,        % sets if automatic breaks should only happen at whitespace
+	title=\lstname,                 % show the filename of files included with \lstinputlisting;
+	% also try caption instead of title
+	keywordstyle=\color{blue},      % keyword style
+	commentstyle=\color{dkgreen},   % comment style
+	stringstyle=\color{mauve},      % string literal style
+	escapeinside={\%*}{*)},         % if you want to add a comment within your code
+	morekeywords={*,...},            % if you want to add more keywords to the set
+	belowcaptionskip=0em,
+	belowskip=0em
+} 
+
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd{\@verbatim}
+{\verbatim@font}
+{\verbatim@font\footnotesize}
+{}{}
+\preto{\@verbatim}{\topsep=0pt \partopsep=0pt }
+\makeatother
+
+\coursename{COMS 4771 Machine Learning } % DON'T CHANGE THIS
+
+\studname{Jun Hu}    % YOUR NAME GOES HERE
+\studmail{jh3846@columbia.edu}% YOUR UNI GOES HERE
+\hwNo{5}                   % THE HOMEWORK NUMBER GOES HERE
+\collab{}   % THE UNI'S OF STUDENTS YOU DISCUSSED WITH
+
+% Uncomment the next line if you want to use \includegraphics.\textbf{\textbf{\textbf{}}}
+%\usepackage{graphicx}
+
+\begin{document}
+\maketitle
+
+\section*{Problem 1}
+
+\begin{enumerate}
+	
+\item[\textbf{(a)}] Compute the Euclidean distance between each observation and the test point:
+\begin{align*}
+D_{obs.1} &= \sqrt{(0-0)^2+(3-0)^2+(0-0)^2} = 3 \\
+D_{obs.2} &= \sqrt{(2-0)^2+(0-0)^2+(0-0)^2} = 2 \\
+D_{obs.3} &= \sqrt{(0-0)^2+(1-0)^2+(3-0)^2} = \sqrt{10} = 3.162278 \\
+D_{obs.4} &= \sqrt{(0-0)^2+(1-0)^2+(2-0)^2} = \sqrt{5} = 2.236068 \\
+D_{obs.5} &= \sqrt{(-1-0)^2+(0-0)^2+(1-0)^2} = \sqrt{2} =  1.414214\\
+D_{obs.6} &= \sqrt{(1-0)^2+(1-0)^2+(1-0)^2} = \sqrt{3} =1.732051
+\end{align*}
+
+\item[\textbf{(b)}] Our prediction with $K=1$ is Green. Because the nearest observation is obs.5, and obs.5 is Green, accordingly, our prediction for $x_1=x_2=x_3=0$ is Green.
+
+\item[\textbf{(c)}] Our prediction with $K=3$ is Red. Because the nearest 3 observation is obs.5, obs.6 and obs.2, obs.5 is Green, but obs.6 and obs.2 are Red, accordingly, our prediction for $x_1=x_2=x_3=0$ is Red.
+
+\item[\textbf{(d)}] We would expect the best value for $K$ is small. Because larger $K$ takes more observations into account, of which the decision boundary is more fixed for a linear boundary. The smaller $K$ takes less observations, and will be much more flexible based on local observations, which means it is much better for a highly nonlinear boundary.
+
+\end{enumerate}
+
+
+
+\section*{Problem 2}
+
+We would prefer SVM to use for classification of new observations. Because for the 1-nearest neighbors, the training error rate is always $0\%$. For this 1NN, we know that the average error rate
+(averaged over both test and training data sets) is $18\%$, which means the test error rate is actually $36\%$, higher than the test error rate of SVM, which is $30\%$. This means SVM is better performed on the test set, so we will use SVM for classification of new observations.
+
+
+\section*{Problem 3}
+
+\begin{enumerate}
+\item[\textbf{(a)}] By definition, we have:
+\begin{align*}
+odds_{\mathrm{default}} 
+&= \frac{N_\mathrm{default}}{N_\mathrm{non-default}}\\
+&= \frac{P(\mathrm{default})}{P(\mathrm{non-default})}\\
+&=  \frac{P(\mathrm{default})}{1-P(\mathrm{default})}\\
+\end{align*}
+Then we get:
+\begin{align*}
+P(\mathrm{default}) &= \frac{odds_{\mathrm{default}} }{1+ odds_{\mathrm{default}} }\\
+&= \frac{0.37}{1+0.37}\\
+&= 0.27
+\end{align*}
+So the fraction of people with an odds of 0.37 of defaulting on their credit card payment will in fact default is $27\%$.
+
+\item[\textbf{(b)}] As we have proven:
+\begin{align*}
+odds_{\mathrm{default}} 
+&=  \frac{P(\mathrm{default})}{1-P(\mathrm{default})}\\
+&= \frac{0.16}{1-0.16}\\
+&= 0.19
+\end{align*}
+So the odds that she will default is 0.19.
+\end{enumerate}
+
+
+\section*{Problem 4}
+
+\begin{enumerate}
+	
+\item[\textbf{(a)}] The statement \textbf{iii.} Less flexible and hence will give improved prediction accuracy when its increase in bias is less than its decrease in variance. -- is true.\\
+
+The expected squared prediction error decomposes as follows:
+ \begin{align*}
+\mathbb{E_\mathcal{D}} [\mathbb{E} _Y  [( \hat{\beta} x - Y )] ]
+&= \mathrm{Var}(Y) + \mathrm{MSE}(\hat{\beta} x) \\
+&= \sigma^2 + \mathrm{Bias}^2 (\hat{\beta} x)  +  \mathrm{Var}(\hat{\beta} x) 
+ \end{align*}
+Such a decomposition is known as the \textbf{bias-variance tradeoff}. We would use lasso when least squares has very hight variance, and when the coefficients shrink toward zero, variance decreases while bias increases, which implies that lasso regression is inherently less flexible than least squares.  According to the bias-variance tradeoff above, if the decrease in variance is larger than the increase in bias, accuracy will improve as the coefficients shrink.
+
+\item[\textbf{(b)}] As the same reason, the statement \textbf{iii.} Less flexible and hence will give improved prediction accuracy when its increase in bias is less than its decrease in variance. -- is true to the ridge regression, which is just another regularization method as lasso.
+
+
+\end{enumerate}
+
+
+\section*{Problem 5}
+
+
+Boosting using depth-one trees (or stumps) leads to an additive model -- that is, each term involves only a single variable, according to the algorithm:
+
+\begin{enumerate}
+	
+	\item[\textbf{1.}] Set $\hat{f}(x) = 0$ and $r_i = y_i\ $ for all $i$ in the training set.
+	
+	\item[\textbf{2.}] Fit a tree $\hat{f}^b$ with $1$ splits ($2$ terminal nodes) to the training data $(x,r)$.\\
+	 Let $\hat{f}^1(x) = c_1I(x_1 < t_1) + c_1' = \frac{1}{\lambda}f_1(x_1)$.\\
+	 Update $\hat{f}(x) \leftarrow \hat{f}(x) + \lambda\hat{f}^1(x) = \lambda\hat{f}^1(x) = f_1(x_1)$ and $r_i = y_i - \lambda\hat{f}^1(x_i)\ $ for all $i$.\\
+	 Next, we get $\hat{f}^2(x) = c_2I(x_2 < t_2) + c_2' = \frac{1}{\lambda}f_2(x_2)$\\
+	 Update $\hat{f}(x) \leftarrow \hat{f}(x) + \lambda\hat{f}^2(x)  = \lambda\hat{f}^1(x) + \lambda\hat{f}^2(x) = f_1(x_1) + f_2(x_2)$ and $r_i = y_i - \lambda\hat{f}^1(x_i) - \lambda\hat{f}^2(x_i)$\\
+	 $$\cdots$$
+
+	 
+	 \item[\textbf{3.}] Eventually we get:
+	 \begin{align*}
+	 \hat{f}(x)
+	 &= \lambda\hat{f}^1(x) + \lambda\hat{f}^2(x) + \ldots + \lambda\hat{f}^p(x) \\
+	 &= f_1(x_1) + f_2(x_2) + \ldots + f_p(x_p)\\
+	 &=   \sum_{j = 1}^p f_j(x_j)
+	 \end{align*}
+	 
+
+
+
+\end{enumerate}
+
+
+
+
+
+\end{document} 
